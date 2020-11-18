@@ -12,7 +12,7 @@ Finally, notice that by setting the coefficients of the second term equal to ![]
 
 Lets now turn to what you need to do in order to complete the code.  As in the previous exercise, I have written a skeleton code for the MD algorithm that you need to fill in.  To complete this you need to:
 
-1. Write a function called `potentia`l that computes the potential energy and the forces for each of the configurations you generate.
+1. Write a function called `potential` that computes the potential energy and the forces for each of the configurations you generate.
 2. Write a function called `kinetic` that calculates the instantaneous kinetic energy.
 3. Every 10 MD steps store the instantaneous values of the potential, kinetic and total energies in the lists called `p_energy`, `k_energy` and `t_energy`
 
