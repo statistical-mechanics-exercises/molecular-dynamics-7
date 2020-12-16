@@ -5,13 +5,22 @@ def potential(x) :
   energy = 0 
   forces = np.zeros([7,2])
   # Your code to calculate the potential goes here
-  
+  for i in range(1,7) :
+      for j in range(i) :
+          d = x[i,:]-x[j,:]
+          r2 = sum(d*d)
+          r6 = r2*r2*r2
+          r12 = r6*r6
+          energy = energy + 4/r12 - 4/r6
+          pref = 4*( 6/(r6*r2) - 12/(r12*r2) )
+          forces[i,:] =  forces[i,:] - pref*d
+          forces[j,:] =  forces[j,:] + pref*d 
   return energy, forces
   
 def kinetic(v) :
   ke = 0
   # Your code to calculate the kinetic energy from the velocities goes here
-  
+  for vel in v : ke = ke + 0.5*sum(vel*vel)
   return ke
   
 # This command reads in the positions that are contained in the file called positions.txt
@@ -27,6 +36,8 @@ temperature = 1.0
 friction = 2.0
 # This calculates the initial values for the forces
 eng, forces = potential(pos)
+therm1 = np.exp( -friction*timestep / 2 )
+therm2 = np.sqrt( temperature*(1-therm1*therm1) )
 
 # We now run 5000 steps of molecular dynamics
 nsteps = 5000
@@ -35,37 +46,41 @@ k_energy = np.zeros(int(nsteps/10))
 for step in range(nsteps) :
   # Apply the thermostat for a half timestep 
   for i in range(7) : 
-    vel[i][0] = 
-    vel[i][1] = 
+    vel[i][0] = vel[i][0]*therm1 + therm2*np.random.normal()
+    vel[i][1] = vel[i][1]*therm1 + therm2*np.random.normal()
   
   # Update the velocities a half timestep
   # fill in the blanks in the code here
   for i in range(7) : 
-    vel[i][0] = 
-    vel[i][1] = 
+    vel[i][0] = vel[i][0] + 0.5*timestep*forces[i][0]
+    vel[i][1] = vel[i][1] + 0.5*timestep*forces[i][1]
     
   # Now update the positions using the new velocities
   # You need to add code here
-  
+  for i in range(7) :
+    pos[i][0] = pos[i][0] + timestep*vel[i][0]
+    pos[i][1] = pos[i][1] + timestep*vel[i][1]
   
   # Recalculate the forces at the new position
   # You need to add code here
-  eng, forces = 
+  eng, forces = potential( pos )
   
   # Update the velocities another half timestep
   # You need to add code here
-
+  for i in range(7) :
+    vel[i][0] = vel[i][0] + 0.5*timestep*forces[i][0]
+    vel[i][1] = vel[i][1] + 0.5*timestep*forces[i][1]
 
   # And finish by applying the thermostat for the second half timestep 
   for i in range(7) : 
-    vel[i][0] = 
-    vel[i][1] = 
+    vel[i][0] = vel[i][0]*therm1 + therm2*np.random.normal()
+    vel[i][1] = vel[i][1]*therm1 + therm2*np.random.normal()
 
   # This is where we want to store the energies and times
   if step%10==0 : 
     times[int(step/10)] = step
     # Write code to ensure the proper values are saved here
-    k_energy[int(step/10)] =
+    k_energy[int(step/10)] = kinetic(vel)
    
    
 # This will plot the kinetic energy as a function of time
